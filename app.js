@@ -15,8 +15,17 @@
 // 6. npm install mongodb --save
 // 7. npm install
 //   this will install express, all it's dependicies, whatever is inside package.jscon
-// 8. run nodemon
-
+// 8. Run nodemon
+// 9. Swtich the templating engine (if desired) from jade to ejs.
+//   in app.js change to ejs in the app.set line
+//   in the views folder changes files to ejs extensions
+// 10. In index.ejs set up common files and include them
+//   head
+//   nav
+//   footer
+// 11. Set up a wrapper div to hold our votiing buttons and our image
+// 12. Style our Home package
+// 13. Set up and test the connection with mongo.
 
 
 
@@ -35,7 +44,7 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

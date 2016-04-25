@@ -1,0 +1,25 @@
+<% include head %>
+<header>
+<% include nav %>
+</header>
+
+<body>
+<div id="photos-wrapper">
+	<h1>A node.js voting game - is it electric?</h1>
+	<div id="photo">
+		<img src="images/peel.jpg">
+	</div>
+</div>
+
+<div id="button-holder">
+	<form class="vote-button" action="./electric" method="post">
+		<input type="text" name="car">
+		<input type="submit" class="btn btn-info" value="Electric!">
+	</form>
+	<form class="vote-button" action="./nonelectric" method="post">
+		<input type="submit" class="btn btn-info" value="Not Electric!">
+	</form>
+</div>
+
+<% include footer %>
+</body>
