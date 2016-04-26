@@ -11,7 +11,7 @@ MongoClient.connect(mongoURL, function(error, database){
 		allPhotos = result;
 		db = database;
 		console.log(allPhotos);
-	})
+	});
 });
 
 /* GET home page. */
@@ -48,6 +48,19 @@ router.get('/electric', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.get("/standings", function(req, res, next){
+	db.collection("cars").find().toArray(function(error, result){
+		standingsArray = []
+		for(var i = 0; i < result.length; i++){
+			standingsArray.push(result[i]);
+		}
+		standingsArray.sort(function(a, b){
+			return (b.totalVotes - a.totalVotes);
+		});
+		res.render("standings", {theStandings: standingsArray});
+	});
+});
+
 router.post("/electric", function(req, res, next){
 	// 1. We know they voted electric or they wouldnt be here
 	// 2. We know what they voted on, becuase we passed it in the req.body var
@@ -77,6 +90,12 @@ router.post("/electric", function(req, res, next){
 });
 
 router.post("/nonelectric", function(req, res, next){
+	db.collection("users").insertOne({
+		ip: req.ip,
+		vote: "nonelectric",
+		image: req.body.photo
+	});
+
 	db.collection("cars").updateOne(
 		{imageSrc: req.body.photo},
 		{

@@ -1,0 +1,16 @@
+<% include head %>
+<header>
+<% include nav %>
+</header>
+
+<body>
+
+ 	<% for(var i=0; i < theStandings.length; i++){ %>
+		<li>
+			<img width="200" src="/images/<%= theStandings[i].imageSrc %>">
+			<p class=""><%=theStandings[i].totalVotes%></p>
+		</li>	
+	<% } %>
+
+<% include footer %>
+</body>
