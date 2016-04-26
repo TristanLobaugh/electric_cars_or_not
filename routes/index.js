@@ -70,9 +70,7 @@ router.post("/electric", function(req, res, next){
 			}
 		);
 	});
-
-	res.redirect("/");
-	
+	res.redirect("/");	
 });
 
 router.post("/nonelectric", function(req, res, next){
@@ -98,5 +96,43 @@ router.post("/nonelectric", function(req, res, next){
 	// 5 Update the images/cars collection by -1
 	// 6 send them back to main page so they can vote again.
 });
+
+router.get("/reset", function(req, res, next){
+	db.collection("cars").updateMany(
+			{},
+			{
+				$set: { "totalVotes": 0}
+			},
+			{}
+		);
+
+	res.redirect("/");
+});
+
+router.get("/resetUser", function(req, res, next){
+	db.collection("users").find().toArray(function(error, result){
+		for(var i = 0; i < result.length; i++){
+			db.collection("users").deleteOne(
+				{"ip": "::1"},
+				function(err, results) {
+
+	      		}	
+			);
+		}
+	});
+
+	res.redirect("/");
+});
+	// db.collection("cars").find().toArray(function(error, result){
+	// 	console.log(result);
+	// 		for(var i = 0; i < result.length; i++){
+	// 			console.log("working "+i);
+	// 	 		db.collection("cars").updateOne(
+	// 				{
+	// 					$set: {"totalVotes": 0}
+	// 				}
+	// 			);
+	//  		}
+	// });
 
 module.exports = router;
