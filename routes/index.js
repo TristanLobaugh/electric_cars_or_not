@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var MongoClient = require("mongodb").MongoClient;
-var mongoURL = process.env.MONGOLAB_URI ||
+var mongoURL = process.env.MONGODB_URI ||
 				process.env.MONGOHQ_URL ||
 				"mongodb://localhost:27017/electricOrNot";
 var db;
@@ -14,19 +14,11 @@ router.get('/', function(req, res, next) {
   var currIP = req.ip;
   db.collection("users").find({ip:currIP}).toArray(function(error, userResult){
   	var photosVoted = [];
-  	console.log(userResult);
-  	if(userResult.length === 0){
-  		console.log("no users");
-  	}else{
-	  	for(var i = 0; userResult.length; i++){
-	  		if(userResult[i].image == undefined){
-	  			console.log("not voted on");
-	  		}
-	  		else{
+	  	for(var i = 0; i < userResult.length; i++){
+	  			// console.log(userResult[i]);
+	  			console.log(userResult[i].image);
 	  			photosVoted.push(userResult[i].image);
 	  		}
-	  	}
-	 }
   	db.collection("cars").find({imageSrc: {$nin: photosVoted}}).toArray(function(error, photosToShow){
   		if(photosToShow.length === 0){
   			res.redirect("/standings");
@@ -35,12 +27,6 @@ router.get('/', function(req, res, next) {
 	  		res.render('index', { carImage: photosToShow[randomNum].imageSrc });
   		}
   	});
-
-
-  	// else{
-  	// 	photosToShow = allPhotos;
-  	// }
- 
   });  
 });
 
