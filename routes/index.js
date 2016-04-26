@@ -27,6 +27,11 @@ router.get('/', function(req, res, next) {
   	if(userResult.length === 0){
   		photosToShow = allPhotos;
   	}
+  	else{
+  		//only load pics users havent voted on
+  		// res.send("You voted!");
+  		photosToShow = allPhotos;
+  	}
   	// 5 pick a random one
   	var randomNum = Math.floor(Math.random() * photosToShow.length);
   	// 6 send the ramdom one to the view index.ejs
@@ -44,33 +49,43 @@ router.get('/electric', function(req, res, next) {
 });
 
 router.post("/electric", function(req, res, next){
-	db.collection("cars").updateOne(
-		{imageSrc: req.body.photo},
-		{
-			$set: {"totalVotes": 1}
-		}, function(error, results){
-			console.log(results);
-		}
-	);
-	res.send("The user chose " + req.body.photo + " as an electric picture.")
 	// 1. We know they voted electric or they wouldnt be here
 	// 2. We know what they voted on, becuase we passed it in the req.body var
 	// 3. We know who they are becuase we know the ip
 	// 4. Update user collection to include current ip and phote they voted on
 	// 5 Update the images/cars collection by 1
 	// 6. send them back to main page
+
+	db.collection("users").insertOne({
+		ip: req.ip,
+		vote: "electric",
+		image: req.body.photo
+	});
+
+	db.collection("cars").find({imageSrc:req.body.photo}).toArray(function(error, result){
+		db.collection("cars").updateOne(
+			{imageSrc: req.body.photo},
+			{
+				$inc: {"totalVotes": 1}
+			}, function(error, results){
+			}
+		);
+	});
+
+	res.redirect("/");
+	
 });
 
 router.post("/nonelectric", function(req, res, next){
 	db.collection("cars").updateOne(
 		{imageSrc: req.body.photo},
 		{
-			$set: {"totalVotes": -1}
+			$inc: {"totalVotes": -1}
 		}, function(error, results){
-			console.log(results);
+			// console.log(results);
 		}
 	);
-	res.send("The user chose " + req.body.photo + " as an poser picture.")
+	res.redirect("/");
 	// 1. We know they voted electric or they wouldnt be here
 	// 2. We know what they voted on, becuase we passed it in the req.body var
 	// 3. We know who they are becuase we know the ip
