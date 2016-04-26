@@ -5,43 +5,43 @@ var mongoURL = process.env.MONGOLAB_URI ||
 				process.env.MONGOHQ_URL ||
 				"mongodb://localhost:27017/electricOrNot";
 var db;
-var allPhotos;
 MongoClient.connect(mongoURL, function(error, database){
-	database.collection("cars").find().toArray(function(error, result){
-		allPhotos = result;
 		db = database;
-		console.log(allPhotos);
-	});
 });
 
-/* GET home page. */
+
 router.get('/', function(req, res, next) {
-  
-  // 1. get all pics form MongoClient
-  // 2. Get the current user from mongo
   var currIP = req.ip;
-  console.log("The current user's IP address is: " + currIP);
-  // 3 find out what pictures the current user has not voted on 
   db.collection("users").find({ip:currIP}).toArray(function(error, userResult){
-  	//If user result returns nothing then user hasnt voted on anything.
+  	var photosVoted = [];
+  	console.log(userResult);
   	if(userResult.length === 0){
-  		photosToShow = allPhotos;
-  	}
-  	else{
-  		//only load pics users havent voted on
-  		// res.send("You voted!");
-  		photosToShow = allPhotos;
-  	}
-  	// 5 pick a random one
-  	var randomNum = Math.floor(Math.random() * photosToShow.length);
-  	// 6 send the ramdom one to the view index.ejs
-  	res.render('index', { carImage: allPhotos[randomNum].imageSrc });
-  });
-  // 4 Loadd all those into an array
-  
-  
-  // 6b If the user has votred on every image in the databse, tell them so.
-  
+  		console.log("no users");
+  	}else{
+	  	for(var i = 0; userResult.length; i++){
+	  		if(userResult[i].image == undefined){
+	  			console.log("not voted on");
+	  		}
+	  		else{
+	  			photosVoted.push(userResult[i].image);
+	  		}
+	  	}
+	 }
+  	db.collection("cars").find({imageSrc: {$nin: photosVoted}}).toArray(function(error, photosToShow){
+  		if(photosToShow.length === 0){
+  			res.redirect("/standings");
+  		}else{
+	  		var randomNum = Math.floor(Math.random() * photosToShow.length);
+	  		res.render('index', { carImage: photosToShow[randomNum].imageSrc });
+  		}
+  	});
+
+
+  	// else{
+  	// 	photosToShow = allPhotos;
+  	// }
+ 
+  });  
 });
 
 router.get('/electric', function(req, res, next) {
